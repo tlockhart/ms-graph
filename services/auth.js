@@ -1,34 +1,46 @@
+const msal = require('@azure/msal-node');
+
 const APP_ID = process.env.CLIENT_ID;
-const APP_SECERET = process.env.CLIENT_SECRET;
-const TOKEN_ENDPOINT = `${process.env.MS_AUTH_URL}${process.env.TENANT_ID}/oauth2/v2.0/token`;
+const APP_SECRET = process.env.CLIENT_SECRET;
+const TOKEN_ENDPOINT = `${process.env.MS_AUTH_URL}${process.env.TENANT_ID}`;
 const MS_GRAPH_SCOPE = process.env.GRAPH_API_URL;
 
-const axios = require("axios");
-const qs = require("qs");
-
 const tokenRequest = {
-  client_id: APP_ID,
-  scope: MS_GRAPH_SCOPE,
-  client_secret: APP_SECERET,
-  grant_type: "client_credentials",
+	scopes: [MS_GRAPH_SCOPE + '.default'],
 };
 
-axios.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded";
+const msalConfig = {
+	auth: {
+		clientId: APP_ID,
+		authority: TOKEN_ENDPOINT ,
+		clientSecret: APP_SECRET,
+    tenantId: process.env.TENANT_ID,
+	}
+};
 
-let token = "";
+//MS AD Token
+const cca = new msal.ConfidentialClientApplication(msalConfig);
 
-async function getToken(tokenRequest) {
-    try {
-        const response = await axios.post(TOKEN_ENDPOINT, qs.stringify(tokenRequest));
-        console.log("RESPONSE:", response.data);
-        return response.data.access_token;
-    }catch(e) {
-        console.log("ERROR1:", error);
-    }
+/**
+ * Acquires token with client credentials.
+ * @param {object} tokenRequest 
+ */
+async function getToken() {
+	const token = await cca.acquireTokenByClientCredential(tokenRequest);
+	console.log("@@@@@@@@@@@@@@TOKEN:", token)
+	return token;
+}
+
+
+const rootURL = MS_GRAPH_SCOPE+ 'v1.0/';
+const apiConfig = {
+	getUsers:  rootURL+'users',
+  createGroups: rootURL+'groups',
+//   getUser:rootURL+'users/user',
 }
 
 module.exports = {
+  apiConfig: apiConfig,
 	tokenRequest: tokenRequest,
 	getToken: getToken
 };
