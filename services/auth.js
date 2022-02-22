@@ -14,7 +14,7 @@ const msalConfig = {
 		clientId: APP_ID,
 		authority: TOKEN_ENDPOINT ,
 		clientSecret: APP_SECRET,
-    tenantId: process.env.TENANT_ID,
+    	tenantId: process.env.TENANT_ID,
 	}
 };
 

@@ -43,8 +43,8 @@ class Index {
         "Content-Type": "application/json",
       },
       body: {
-        description: "prototyping-platform",
-        displayName: "prototyping-platform",
+        description: process.env.DISPLAY_NAME,
+        displayName: process.env.DISPLAY_NAME,
         groupTypes: ["Unified"],
         mailEnabled: false,
         mailNickname: `Dummy_${now}`,
@@ -84,8 +84,8 @@ class Index {
       json: true,
     };
 
-    const team = await requestUtils.request(options, true);
-    console.log("TEAM:", team);
+    // const team = await requestUtils.request(options, true);
+    // console.log("TEAM:", team);
   }
 }
 
